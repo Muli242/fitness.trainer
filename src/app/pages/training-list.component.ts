@@ -8,7 +8,7 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
 @Component({
   selector: 'app-training-list', standalone: true, imports: [RouterLink],
   template: `
-    <div class="row" style="margin:0 0 1rem"><a class="btn primary" routerLink="/trainings/new">➕ Neues Training</a></div>
+    <div class="row span-all" style="margin:0 0 1rem"><a class="btn primary" routerLink="/trainings/new">➕ Neues Training</a></div>
     @for (t of ts.trainings(); track t.id) {
       <article class="card">
         @if (t.image) { <img class="card-img" [src]="t.image" alt=""> }
@@ -25,10 +25,10 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
         </div>
       </article>
     } @empty {
-      <div class="card center"><h2>Bereit</h2><p class="muted sub-text">Noch keine Trainings vorhanden. Ein Training fasst mehrere Trainingspläne zusammen.</p></div>
+      <div class="card center span-all"><h2>Bereit</h2><p class="muted sub-text">Noch keine Trainings vorhanden. Ein Training fasst mehrere Trainingspläne zusammen.</p></div>
     }
 
-    <div class="card">
+    <div class="card span-all">
       <h3>Trainings übertragen</h3>
       <p class="muted">Exportiert alle Trainings (inkl. Bild) als JSON-Datei. Beim Import werden Trainings mit gleicher ID ersetzt, neue ergänzt. Die zugehörigen Pläne vorher auf dem Zielgerät importieren.</p>
       <div class="row">

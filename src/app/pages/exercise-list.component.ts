@@ -10,8 +10,8 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
 @Component({
   selector: 'app-exercise-list', standalone: true, imports: [FormsModule, RouterLink],
   template: `
-    <div class="row" style="margin:0 0 1rem"><a class="btn primary" routerLink="/exercises/new">➕ Neue Übung</a></div>
-    <div class="filters">
+    <div class="row span-all" style="margin:0 0 1rem"><a class="btn primary" routerLink="/exercises/new">➕ Neue Übung</a></div>
+    <div class="filters span-all">
       <input class="search-bar" type="search" placeholder="Suchen…" [ngModel]="q()" (ngModelChange)="q.set($event)">
       <select class="search-bar" aria-label="Typ filtern" [ngModel]="type()" (ngModelChange)="type.set($event)">
         <option value="">Alle Typen</option>
@@ -25,8 +25,10 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
             <span class="badge">{{ ex.reps ? ex.reps + ' Wdh.' : fmt(ex.durationSeconds ?? 120) }}</span></span></h2>
         <div class="muted"><i>{{ ex.alt }}</i>{{ ex.alt ? ' · ' : '' }}{{ ex.target }}</div>
         <h3>Ziel &amp; Wirkung</h3><p>{{ ex.purpose }}</p>
-        <h3>Ausführung</h3>
-        <ol>@for (s of ex.steps; track $index) { <li [innerHTML]="s"></li> }</ol>
+        @if (ex.steps.length) {
+          <h3>Ausführung</h3>
+          <ol>@for (s of ex.steps; track $index) { <li [innerHTML]="s"></li> }</ol>
+        }
         @if (ex.note) { <div class="note">{{ ex.note }}</div> }
         @if (ex.safety) { <div class="note danger">{{ ex.safety }}</div> }
         <div class="row">
@@ -36,9 +38,9 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
           }
         </div>
       </article>
-    } @empty { <p class="muted center">Keine Übungen gefunden.</p> }
+    } @empty { <p class="muted center span-all">Keine Übungen gefunden.</p> }
 
-    <div class="card">
+    <div class="card span-all">
       <h3>Übungen übertragen</h3>
       <p class="muted">Exportiert alle Übungen als JSON-Datei. Beim Import werden Übungen mit gleicher ID ersetzt, neue ergänzt.</p>
       <div class="row">

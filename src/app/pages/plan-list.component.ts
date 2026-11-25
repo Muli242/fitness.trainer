@@ -27,11 +27,11 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
         </div>
       </article>
     } @empty {
-      <div class="card center"><h2>Bereit</h2><p class="muted sub-text">Noch keine Trainingspläne vorhanden.</p>
+      <div class="card center span-all"><h2>Bereit</h2><p class="muted sub-text">Noch keine Trainingspläne vorhanden.</p>
         <div class="row"><a class="btn primary" routerLink="/plans/new">Ersten Plan erstellen</a></div></div>
     }
 
-    <div class="card">
+    <div class="card span-all">
       <h3>Pläne übertragen</h3>
       <p class="muted">Exportiert alle Pläne als JSON-Datei. Beim Import werden Pläne mit gleicher ID ersetzt, neue ergänzt. Eigene Übungen vorher auf dem Zielgerät importieren.</p>
       <div class="row">

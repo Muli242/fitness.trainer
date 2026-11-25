@@ -35,7 +35,7 @@ import { EXERCISE_TYPES, Exercise, ExerciseType, isExerciseType } from '../core/
     </section>
 
     <section class="card">
-      <h3>Ausführung</h3>
+      <h3>Ausführung (optional)</h3>
       @for (s of steps(); track $index; let i = $index) {
         <div class="item">
           <span class="nr">{{ i + 1 }}</span>
@@ -89,7 +89,6 @@ export class ExerciseEditorComponent {
     const name = this.name.trim();
     if (!name) { this.msg.set('Bitte einen Namen eingeben.'); return; }
     const steps = this.steps().map(s => s.trim()).filter(Boolean);
-    if (!steps.length) { this.msg.set('Bitte mindestens einen Ausführungsschritt eingeben.'); return; }
     const dur = Math.max(5, Math.round(+this.duration || 0)), reps = Math.max(1, Math.round(+this.reps || 0));
     const ex: Exercise = {
       id: this.editId() ?? this.es.newId(name), name, alt: this.alt.trim(), target: this.target.trim(), purpose: this.purpose.trim(), steps,

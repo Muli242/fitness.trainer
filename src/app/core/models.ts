@@ -24,7 +24,7 @@ export interface PlanItem {
   info?: string;        // z. B. "Runde 2/3 · Zirkel A 1/2"
 }
 /** Gruppe von Übungen mit eigener Rundenzahl (Standard 1 = reine Zusammenfassung) */
-export interface PlanGroup { name: string; rounds: number; items: PlanItem[]; }
+export interface PlanGroup { id?: string; name: string; rounds: number; items: PlanItem[]; }
 export type PlanEntry = PlanItem | PlanGroup;
 export const PALETTE = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7', '#eab308', '#ec4899', '#06b6d4'];
 export const PAUSE_COLOR = '#2dd4bf';

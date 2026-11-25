@@ -19,8 +19,8 @@ import { Exercise, PAUSE_COLOR, TrainingPlan, colorOf, expandPlan, formatDuratio
           @else { <div class="row"><button class="btn primary" (click)="restart()">Nochmal</button><a class="btn secondary" routerLink="/plans">Zur Auswahl</a></div> }</div>
       } @else {
         @if (current(); as c) {
-          @if (view() === 'timer') {
-            <div class="card timer panel">
+          <div class="player-grid">
+            <div class="card timer panel" [class.hide-narrow]="view() !== 'timer'">
               <div class="upnext">
                 <div class="up">@if (nx(); as n) { <span class="sw" [style.background]="n.color"></span> Als Nächstes: <strong>{{ n.ex.name }}</strong> }</div>
                 <div class="up">@if (nn(); as n) { <span class="sw" [style.background]="n.color"></span> Danach: <strong>{{ n.ex.name }}</strong> }</div>
@@ -46,8 +46,7 @@ import { Exercise, PAUSE_COLOR, TrainingPlan, colorOf, expandPlan, formatDuratio
                 </div>
               </div>
             </div>
-          } @else {
-            <div class="card panel scroll">
+            <div class="card panel scroll" [class.hide-narrow]="view() === 'timer'">
               @for (r of rows(); track $index) {
                 <div class="item" [class.current]="$index === idx()" [class.past]="$index < idx()">
                   @if ($index === idx()) { <div class="rowbar" [style.width.%]="frac() * 100" [style.background]="r.color"></div> }
@@ -58,9 +57,9 @@ import { Exercise, PAUSE_COLOR, TrainingPlan, colorOf, expandPlan, formatDuratio
               }
               @for (e of filler(); track $index) { <div class="item empty"></div> }
             </div>
-          }
+          </div>
           <div class="controls">
-            <button class="ib" (click)="toggleView()" [attr.aria-label]="view() === 'timer' ? 'Übungsliste anzeigen' : 'Timer anzeigen'"
+            <button class="ib view-toggle" (click)="toggleView()" [attr.aria-label]="view() === 'timer' ? 'Übungsliste anzeigen' : 'Timer anzeigen'"
                     [title]="view() === 'timer' ? 'Übungsliste' : 'Timer'">
               @if (view() === 'timer') { <svg viewBox="0 0 24 24"><path d="M3 5h18v2H3zM3 11h18v2H3zM3 17h18v2H3z"/></svg> }
               @else { <svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 5h-2v6l5 3 1-1.7-4-2.3z"/></svg> }
@@ -87,8 +86,10 @@ import { Exercise, PAUSE_COLOR, TrainingPlan, colorOf, expandPlan, formatDuratio
           <h2>{{ pu.ex.name }} @if (pu.pinned) { <button class="icon" (click)="popup.set(null)">✕</button> }</h2>
           <p class="muted"><i>{{ pu.ex.type ? pu.ex.type + ' · ' : '' }}{{ pu.ex.target }}</i></p>
           <h3>Ziel &amp; Wirkung</h3><p>{{ pu.ex.purpose }}</p>
-          <h3>Ausführung</h3>
-          <ol>@for (st of pu.ex.steps; track $index) { <li [innerHTML]="st"></li> }</ol>
+          @if (pu.ex.steps.length) {
+            <h3>Ausführung</h3>
+            <ol>@for (st of pu.ex.steps; track $index) { <li [innerHTML]="st"></li> }</ol>
+          }
           @if (pu.ex.note) { <div class="note">{{ pu.ex.note }}</div> }
           @if (pu.ex.safety) { <div class="note danger">{{ pu.ex.safety }}</div> }
         </article>

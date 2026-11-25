@@ -1,0 +1,234 @@
+[
+  {
+    "id": "scorpion",
+    "name": "Scorpion Stretch",
+    "type": "Mobilisierung",
+    "alt": "Skorpion, Skorpion-Dehnung",
+    "target": "Brust, Hüftbeuger, Wirbelsäule",
+    "purpose": "Hervorragende Mobilisations- und Dehnübung für die Wirbelsäule, den unteren Rücken, die Hüftbeuger sowie die Brustmuskulatur.",
+    "steps": [
+      "<strong>Ausgangsposition:</strong> Flach auf den Bauch legen. Die Arme auf Schulterhöhe seitlich wie ein „T“ ausstrecken.",
+      "<strong>Die Bewegung:</strong> Ein Bein anheben, leicht beugen und den Fuß kontrolliert über den Körper hinweg zur gegenüberliegenden Seite führen.",
+      "<strong>Das Ziel:</strong> Der Fuß versucht, der diagonalen Hand so nahe wie möglich zu kommen.",
+      "<strong>Fokus:</strong> Schultern und Arme bleiben flach auf dem Boden verankert."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "halo",
+    "name": "Kettlebell Halo",
+    "type": "Mobilisierung",
+    "alt": "Halo, Kopfkreisen mit Gewicht",
+    "target": "Schultern, Rumpfstabilisation",
+    "purpose": "Mobilisierung und Stärkung der Schultergelenke sowie Aktivierung und Stabilisierung des Rumpfes.",
+    "steps": [
+      "<strong>Ausgangsposition:</strong> Hüftbreiter Stand. Die Kettlebell an den Hörnern halten.",
+      "<strong>Die Bewegung:</strong> Die Kettlebell nah an der linken Wange vorbei hinter den Kopf und über die rechte Wange zurück führen.",
+      "<strong>Der Kreis:</strong> Enge, fließende Kreisbahn um den Kopf. Der Kopf bleibt absolut still!",
+      "<strong>Richtungswechsel:</strong> Nach jeder Wiederholung die Richtung wechseln."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "squat",
+    "name": "Deep Squat",
+    "type": "Mobilisierung",
+    "alt": "Tiefe Hocke, Malasana, Asian Squat",
+    "target": "Sprunggelenke, Waden, Hüfte",
+    "purpose": "Dehnt Waden, Achillessehnen, Oberschenkelinnenseiten sowie die Hüfte.",
+    "steps": [
+      "So tief wie möglich in die Kniebeuge absinken.",
+      "Die Fersen bleiben idealerweise komplett auf dem Boden verankert.",
+      "Der Oberkörper bleibt so aufrecht wie möglich."
+    ],
+    "note": "Tipp: Bei Bedarf ein zusammengerolltes Handtuch unter die Fersen legen.",
+    "durationSeconds": 120
+  },
+  {
+    "id": "pflug",
+    "name": "Der Pflug",
+    "type": "Mobilisierung",
+    "alt": "Halasana, Nackendehnung",
+    "target": "Nacken, Rücken, Beinrückseite",
+    "purpose": "Intensive Dehnung für die gesamte Körperrückseite.",
+    "steps": [
+      "<strong>Vorbereitung:</strong> Rückenlage, Beine geschlossen. Kinn leicht zur Brust ziehen.",
+      "<strong>Aufwärtsbewegung:</strong> Bauch anspannen, Beine anheben und kontrolliert über den Kopf nach hinten führen.",
+      "<strong>Endposition:</strong> Absenken, bis die Zehen den Boden berühren.",
+      "<strong>Auflösen:</strong> Wirbel für Wirbel langsam zurückrollen."
+    ],
+    "safety": "WICHTIGER SICHERHEITSHINWEIS: Drehe den Kopf während der Übung niemals nach links oder rechts!",
+    "durationSeconds": 120
+  },
+  {
+    "id": "high_knees",
+    "name": "High Knees",
+    "type": "Ausdauer",
+    "alt": "Kniehebelauf auf der Stelle",
+    "target": "Herz-Kreislauf, Hüftbeuger, Beine",
+    "purpose": "Bringt den Puls zügig in die Höhe und aktiviert die Core-Muskulatur.",
+    "steps": [
+      "Aufrechter Stand, Füße hüftbreit.",
+      "Im Wechsel dynamisch auf der Stelle laufen und die Knie auf Hüfthöhe anheben.",
+      "Die Arme aktiv mitführen."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "skaters",
+    "name": "Skaters",
+    "type": "Ausdauer",
+    "alt": "Side-to-Side Jumps",
+    "target": "Seitliche Stabilität, Po, Balance",
+    "purpose": "Trainiert die seitliche Abdruckkraft und stärkt das Gesäß.",
+    "steps": [
+      "Von einem Bein seitlich auf das andere springen.",
+      "Das hintere Bein diagonal hinter das Standbein führen.",
+      "Die Arme schwingen zur Unterstützung mit."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "climbers",
+    "name": "Mountain Climbers",
+    "type": "Ausdauer",
+    "alt": "Bergsteiger",
+    "target": "Ganzkörper-Cardio, Rumpf, Schultern",
+    "purpose": "Effektive Kombination aus Ausdauer und Rumpfstabilisierung.",
+    "steps": [
+      "Ausgangsposition hoher Liegestütz (Plank).",
+      "Abwechselnd ein Knie zügig unter die Brust ziehen.",
+      "Das Becken bleibt tief und parallel zum Boden."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "boxing",
+    "name": "Jumping Jacks / Boxing",
+    "type": "Ausdauer",
+    "alt": "Schattenboxen oder Hampelmann",
+    "target": "Ganzkörper-Ausdauer, Rhythmus",
+    "purpose": "Hält die Herzfrequenz hoch und verbessert die Schulterausdauer.",
+    "steps": [
+      "Leichtfüßiger Stand in Kampfstellung.",
+      "Locker auf den Ballen federn und flüssige Schlagkombinationen ausführen.",
+      "Rumpf bei jedem Schlag eindrehen."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "air_squats",
+    "name": "Air Squats",
+    "type": "Kraft",
+    "alt": "Tiefe Kniebeugen",
+    "target": "Oberschenkel, Gesäß, Beine",
+    "purpose": "Stärkt die Beinstrecker und stabilisiert Knie- und Hüftgelenke.",
+    "steps": [
+      "Schulterbreiter Stand, Zehen leicht nach außen.",
+      "Gesäß nach hinten-unten absenken.",
+      "Brust aufrecht halten, Knie leicht nach außen drücken.",
+      "Über die Fersen dynamisch wieder hochdrücken."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "push_ups",
+    "name": "Push-Ups",
+    "type": "Kraft",
+    "alt": "Liegestütze",
+    "target": "Brust, Schultern, Trizeps, Rumpf",
+    "purpose": "Oberkörper-Druckkraft und Kernstabilität.",
+    "steps": [
+      "Hände etwas weiter als schulterbreit aufsetzen.",
+      "Ellenbogen im 45-Grad-Winkel beugen, bis die Brust knapp über dem Boden ist.",
+      "Kontrolliert nach oben herausdrücken."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "glute_bridge",
+    "name": "Glute Bridge",
+    "type": "Kraft",
+    "alt": "Beckenheben",
+    "target": "Gesäß, Hintere Oberschenkel, Rücken",
+    "purpose": "Isoliert den Gesäßmuskel und stärkt die Körperrückseite.",
+    "steps": [
+      "Rückenlage, Knie anwinkeln, Füße hüftbreit aufstellen.",
+      "Über die Fersen das Becken nach oben drücken.",
+      "Am höchsten Punkt Gesäß 1–2 Sekunden anspannen."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "shoulder_taps",
+    "name": "Plank Shoulder Taps",
+    "type": "Kraft",
+    "alt": "Schulter-Taps im Liegestütz",
+    "target": "Tiefe Bauchmuskeln, Schultern",
+    "purpose": "Stärkt die Kernstabilität und verhindert Beckenrotationen.",
+    "steps": [
+      "Hoher Liegestütz, Füße etwas weiter auseinander.",
+      "Abwechselnd mit der rechten Hand die linke Schulter berühren und umgekehrt.",
+      "Das Becken bleibt dabei stabil."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "balance_reaches",
+    "name": "Single-Leg Balance",
+    "type": "Koordination",
+    "alt": "Einbeinstand mit Reichweiten",
+    "target": "Sprunggelenk, Hüftstabilität, Balance",
+    "purpose": "Schult das Gleichgewicht und stärkt die feine Tiefenmuskulatur im Fuß- und Sprunggelenk.",
+    "steps": [
+      "Auf einem Bein stehen, Standknie leicht beugen.",
+      "Das Spielbein langsam nach vorne, zur Seite und nach hinten strecken, ohne den Boden zu berühren.",
+      "Nach 1 Minute das Bein wechseln.",
+      "Progression: Augen schließen oder den Kopf langsam drehen."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "crossover",
+    "name": "Crossover Steps / Carioca",
+    "type": "Koordination",
+    "alt": "Überkreuzlauf, Hüftrotation",
+    "target": "Hüftbeweglichkeit, Gehirnhälften-Verknüpfung",
+    "purpose": "Fördert die Koordination durch Überkreuzen der Körpermitte und öffnet die Hüfte.",
+    "steps": [
+      "Seitlich bewegen: Das hintere Bein einmal vor und beim nächsten Schritt hinter dem Standbein überkreuzen.",
+      "Der Oberkörper bleibt nach vorne gerichtet, während die Hüfte aktiv dreht.",
+      "Flüssiges Tempo halten und die Richtung wechseln."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "dead_bug",
+    "name": "Dead Bug",
+    "type": "Koordination",
+    "alt": "Gegengleiches Absenken in Rückenlage",
+    "target": "Rumpfkoordination, Neuromuskuläre Ansteuerung",
+    "purpose": "Schult die koordinierte Ansteuerung von Rumpf, Arm- und Beinbewegungen.",
+    "steps": [
+      "Rückenlage, Beine im 90-Grad-Winkel, Arme senkrecht nach oben.",
+      "Der untere Rücken bleibt flach auf den Boden gepresst.",
+      "Rechten Arm und linkes Bein gleichzeitig nach unten absenken.",
+      "Zurück in die Mitte führen und die Diagonale wechseln."
+    ],
+    "durationSeconds": 120
+  },
+  {
+    "id": "line_jumps",
+    "name": "Rhythm Line Jumps",
+    "type": "Koordination",
+    "alt": "Linien-Sprünge, Rhythmus-Federung",
+    "target": "Reaktionsschnelligkeit, Fußarbeit",
+    "purpose": "Schult die flinke Fußarbeit, die Sprunggelenks-Steifigkeit und das Rhythmusgefühl.",
+    "steps": [
+      "Eine gedachte Linie auf dem Boden markieren.",
+      "Leichtfüßig und rhythmisch mit beiden Füßen vor und zurück über die Linie springen.",
+      "Nach 1 Minute auf seitliche Sprünge (links/rechts) wechseln."
+    ],
+    "durationSeconds": 120
+  }
+]

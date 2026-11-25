@@ -1,0 +1,13 @@
+{
+  "id": "pause",
+  "name": "Pause",
+  "type": "Entspannung",
+  "alt": "Erholung, Regeneration",
+  "target": "Erholung",
+  "purpose": "Entspannung, Erholung",
+  "steps": [
+    "Trinke einen Schluck Wasser.",
+    "Beruhige deinen Atem."
+  ],
+  "durationSeconds": 30
+}

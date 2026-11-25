@@ -50,6 +50,30 @@ export class ExerciseService {
     return this.exercises().filter(e => [e.name, e.type ?? '', e.alt, e.target, e.purpose, ...e.steps].join(' ').toLowerCase().includes(s));
   }
 
+  /** Übung stammt aus den mitgelieferten Daten (assets/exercises.json) */
+  inBase(id: string) { return this.base().some(e => e.id === id); }
+  /** Übung wurde in der App angelegt oder überschrieben */
+  isCustom(id: string) { return this.custom().some(e => e.id === id); }
+  /** Neue eindeutige ID aus dem Namen */
+  newId(name: string): string {
+    const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'uebung';
+    let id = slug, n = 2;
+    while (this.byId(id) || id === 'pause') id = `${slug}_${n++}`;
+    return id;
+  }
+  /** Speichert (neu oder überschreibend); false = ungültig oder Speicher voll */
+  save(ex: Exercise): boolean {
+    const n = normalize(ex);
+    if (!n) return false;
+    const prev = this.custom();
+    this.custom.set([...prev.filter(e => e.id !== n.id), n]);
+    if (this.persistCustom()) return true;
+    this.custom.set(prev); return false;
+  }
+  /** Löscht eine eigene Übung; bei überschriebenen Originalen wird das Original wiederhergestellt */
+  remove(id: string) { this.custom.set(this.custom().filter(e => e.id !== id)); this.persistCustom(); }
+  private persistCustom(): boolean { try { localStorage.setItem(KEY, JSON.stringify(this.custom())); return true; } catch { return false; } }
+
   exportData() { return { app: 'fitness-trainer', version: 1, exercises: this.exercises() }; }
   importData(raw: any): ImportResult {
     const list = Array.isArray(raw) ? raw : raw?.exercises;

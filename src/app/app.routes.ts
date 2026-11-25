@@ -11,6 +11,8 @@ export const routes: Routes = [
   { path: 'plans/new', loadComponent: () => import('./pages/plan-editor.component').then(m => m.PlanEditorComponent) },
   { path: 'plans/:id/edit', loadComponent: () => import('./pages/plan-editor.component').then(m => m.PlanEditorComponent) },
   { path: 'plans/:id/play', loadComponent: () => import('./pages/player.component').then(m => m.PlayerComponent) },
+  { path: 'exercises/new', loadComponent: () => import('./pages/exercise-editor.component').then(m => m.ExerciseEditorComponent) },
+  { path: 'exercises/:id/edit', loadComponent: () => import('./pages/exercise-editor.component').then(m => m.ExerciseEditorComponent) },
   { path: 'exercises', loadComponent: () => import('./pages/exercise-list.component').then(m => m.ExerciseListComponent) },
   { path: '**', redirectTo: 'dashboard' },
 ];

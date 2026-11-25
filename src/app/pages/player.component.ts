@@ -6,7 +6,7 @@ import { TrainingService } from '../core/training.service';
 import { LastUsedService } from '../core/last-used.service';
 import { ProgressService } from '../core/progress.service';
 import { SettingsService } from '../core/settings.service';
-import { Exercise, PALETTE, PAUSE_COLOR, TrainingPlan, formatDuration } from '../core/models';
+import { Exercise, PAUSE_COLOR, TrainingPlan, colorOf, expandPlan, formatDuration, isGroup } from '../core/models';
 
 @Component({
   selector: 'app-player', standalone: true, imports: [RouterLink],
@@ -42,6 +42,7 @@ import { Exercise, PALETTE, PAUSE_COLOR, TrainingPlan, formatDuration } from '..
                   <div class="ex-name" [style.color]="c.color">{{ c.ex.name }}</div>
                   <div class="time">{{ mmss(left()) }}</div>
                   <div class="muted small">{{ idx() + 1 }} / {{ rows().length }}</div>
+                  @if (c.info) { <div class="muted small">{{ c.info }}</div> }
                 </div>
               </div>
             </div>
@@ -116,22 +117,20 @@ export class PlayerComponent implements OnDestroy {
     if (snap.routeConfig?.path?.startsWith('trainings')) {
       const t = this.ts.get(id);
       return t && { id: t.id, name: t.name, description: t.description,
-        items: t.planIds.flatMap((pid, i) => (this.ps.get(pid)?.items ?? []).map(it => ({ ...it, planIndex: i }))) };
+        items: t.planIds.flatMap((pid, i) => { const p = this.ps.get(pid); return p ? expandPlan(p).map(it => ({ ...it, planIndex: i })) : []; }) };
     }
-    const p = this.ps.get(id), idx = Number(snap.queryParamMap.get('index'));
-    if (p && snap.queryParamMap.has('training') && snap.queryParamMap.has('index') && isFinite(idx)) {
-      return { ...p, items: p.items.map(it => ({ ...it, planIndex: idx })) };
-    }
-    return p;
+    const p = this.ps.get(id);
+    if (!p) return undefined;
+    const idx = Number(snap.queryParamMap.get('index')), items = expandPlan(p);   // Runden/Gruppen aufgelöst
+    const ctx = snap.queryParamMap.has('training') && snap.queryParamMap.has('index') && isFinite(idx);
+    return { ...p, rounds: 1, items: ctx ? items.map(it => ({ ...it, planIndex: idx })) : items };
   }
-  rows = computed(() => {
-    let k = 0;
-    return (this.plan()?.items ?? []).flatMap(i => {
-      if (i.pause) return [{ ...i, pause: true, ex: this.es.pause(), color: PAUSE_COLOR }];
-      const ex = this.es.byId(i.exerciseId ?? '');
-      return ex ? [{ ...i, pause: false, ex, color: PALETTE[k++ % PALETTE.length] }] : [];
-    });
-  });
+  rows = computed(() => (this.plan()?.items ?? []).flatMap(e => {
+    if (isGroup(e)) return [];
+    if (e.pause) return [{ ...e, pause: true, ex: this.es.pause(), color: PAUSE_COLOR }];
+    const ex = this.es.byId(e.exerciseId ?? '');
+    return ex ? [{ ...e, pause: false, ex, color: colorOf(e) }] : [];
+  }));
   totalSec = computed(() => this.rows().reduce((s, r) => s + r.durationSeconds, 0));
   idx = signal(0); ms = signal(0); running = signal(false); done = signal(false);
   left = computed(() => Math.ceil(this.ms() / 1000));

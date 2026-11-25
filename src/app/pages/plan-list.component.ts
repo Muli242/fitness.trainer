@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlanService } from '../core/plan.service';
-import { formatDuration, TrainingPlan } from '../core/models';
+import { formatDuration, planCounts, planSeconds, TrainingPlan } from '../core/models';
 import { downloadJson, importMessage, readJsonFile, today } from '../core/file-io';
 
 @Component({
@@ -14,9 +14,11 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
         <div class="stats">
           <div class="stat-box"><span class="stat-label">Dauer</span><span class="stat-value">{{ fmt(total(p)) }}</span></div>
           <div class="stat-div"></div>
-          <div class="stat-box"><span class="stat-label">Übungen</span><span class="stat-value">{{ count(p) }}</span></div>
+          <div class="stat-box"><span class="stat-label">Übungen</span><span class="stat-value">{{ counts(p).exercises }}</span></div>
           <div class="stat-div"></div>
-          <div class="stat-box"><span class="stat-label">Pausen</span><span class="stat-value">{{ p.items.length - count(p) }}</span></div>
+          <div class="stat-box"><span class="stat-label">Pausen</span><span class="stat-value">{{ counts(p).pauses }}</span></div>
+          @if (counts(p).rounds > 1) { <div class="stat-div"></div>
+          <div class="stat-box"><span class="stat-label">Runden</span><span class="stat-value">{{ counts(p).rounds }}</span></div> }
         </div>
         <div class="row">
           <a class="btn primary" [routerLink]="['/plans', p.id, 'play']">▶ Starten</a>
@@ -42,8 +44,7 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
 })
 export class PlanListComponent {
   ps = inject(PlanService); fmt = formatDuration;
-  total(p: TrainingPlan) { return p.items.reduce((s, i) => s + i.durationSeconds, 0); }
-  count(p: TrainingPlan) { return p.items.filter(i => !i.pause).length; }
+  total = planSeconds; counts = planCounts;
   msg = signal(''); err = signal(false);
   export() { downloadJson(`fitness-trainer-plaene-${today()}.json`, this.ps.exportData()); }
   async import(ev: Event) {

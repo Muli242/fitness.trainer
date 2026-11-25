@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { PlanItem, TrainingPlan } from './models';
+import { PlanEntry, PlanItem, TrainingPlan, clampRounds } from './models';
 import { ImportResult } from './file-io';
 
 const KEY = 'ft_plans';
@@ -33,14 +33,21 @@ export class PlanService {
   }
   private normalize(p: any): TrainingPlan | null {
     if (!p || typeof p.name !== 'string' || !p.name.trim() || !Array.isArray(p.items)) return null;
-    const items = p.items.flatMap((i: any): PlanItem[] => {
+    const leaf = (i: any): PlanItem[] => {
       const d = Number(i?.durationSeconds);
       if (!isFinite(d) || d < 0) return [];
       if (i.pause === true) return [{ pause: true, durationSeconds: Math.round(d) }];
       return typeof i.exerciseId === 'string' ? [{ exerciseId: i.exerciseId, durationSeconds: Math.round(d) }] : [];
+    };
+    const items = p.items.flatMap((e: any): PlanEntry[] => {
+      if (e && Array.isArray(e.items)) {
+        const sub = e.items.flatMap(leaf);
+        return sub.length ? [{ name: typeof e.name === 'string' ? e.name.trim().slice(0, 40) : '', rounds: clampRounds(e.rounds), items: sub }] : [];
+      }
+      return leaf(e);
     });
     if (!items.length) return null;
     return { id: typeof p.id === 'string' && p.id ? p.id : this.newId(), name: p.name.trim(),
-      description: typeof p.description === 'string' ? p.description : '', items };
+      description: typeof p.description === 'string' ? p.description : '', items, rounds: clampRounds(p.rounds) };
   }
 }

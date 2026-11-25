@@ -23,8 +23,8 @@ import { formatDuration, planSeconds } from '../core/models';
         @for (e of entries(); track e.i) {
           <div class="item" [class.done]="doneSet().has(e.i)">
             @if (doneSet().has(e.i)) { <span class="nr check" aria-label="erledigt">✓</span> } @else { <span class="nr">{{ $index + 1 }}</span> }
-            <span class="grow">{{ e.p.name }}</span>
-            <span class="badge">{{ fmt(sec(e.p)) }}</span>
+            <span class="grow"><span class="pname">{{ e.p.name }}</span>
+              <small class="sub-dur">{{ fmt(sec(e.p)) }}@if ((e.p.rounds ?? 1) > 1) { · {{ e.p.rounds }} Runden }</small></span>
             <a class="icon" [routerLink]="['/plans', e.p.id, 'play']" [queryParams]="{ training: t.id, index: e.i }"
                aria-label="Plan einzeln starten" title="Plan einzeln starten">▶</a>
           </div>

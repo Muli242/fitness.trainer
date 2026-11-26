@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export interface LastUsed { kind: 'training' | 'plan'; id: string; }
+export interface LastUsed { kind: 'training' | 'workout'; id: string; }
 const KEY = 'ft_last';
 
 /** Merkt sich, was zuletzt gestartet wurde (für das Dashboard) */
@@ -14,7 +14,8 @@ export class LastUsedService {
   private read(): LastUsed | null {
     try {
       const v = JSON.parse(localStorage.getItem(KEY) ?? 'null');
-      return v && (v.kind === 'training' || v.kind === 'plan') && typeof v.id === 'string' ? v : null;
+      if (v?.kind === 'plan') v.kind = 'workout';   // alter Wert
+      return v && (v.kind === 'training' || v.kind === 'workout') && typeof v.id === 'string' ? v : null;
     } catch { return null; }
   }
 }

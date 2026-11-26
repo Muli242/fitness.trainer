@@ -1,9 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { PlanService } from '../core/plan.service';
+import { WorkoutService } from '../core/workout.service';
 import { ProgressService } from '../core/progress.service';
 import { TrainingService } from '../core/training.service';
-import { formatDuration, planSeconds } from '../core/models';
+import { formatDuration, workoutSeconds } from '../core/models';
 
 @Component({
   selector: 'app-training-detail', standalone: true, imports: [RouterLink],
@@ -15,18 +15,18 @@ import { formatDuration, planSeconds } from '../core/models';
         <div class="stats compact">
           <div class="stat-box"><span class="stat-label">Dauer</span><span class="stat-value">{{ fmt(total()) }}</span></div>
           <div class="stat-div"></div>
-          <div class="stat-box"><span class="stat-label">Pläne</span><span class="stat-value">{{ entries().length }}</span></div>
+          <div class="stat-box"><span class="stat-label">Workouts</span><span class="stat-value">{{ entries().length }}</span></div>
         </div>
         @if (t.description) { <div class="rich" [innerHTML]="t.description"></div> }
 
-        <h3>Trainingspläne <span class="progress-info">{{ doneCount() }} / {{ entries().length }} erledigt</span></h3>
+        <h3>Workouts <span class="progress-info">{{ doneCount() }} / {{ entries().length }} erledigt</span></h3>
         @for (e of entries(); track e.i) {
           <div class="item" [class.done]="doneSet().has(e.i)">
             @if (doneSet().has(e.i)) { <span class="nr check" aria-label="erledigt">✓</span> } @else { <span class="nr">{{ $index + 1 }}</span> }
             <span class="grow"><span class="pname">{{ e.p.name }}</span>
               <small class="sub-dur">{{ fmt(sec(e.p)) }}@if ((e.p.rounds ?? 1) > 1) { · {{ e.p.rounds }} Runden }</small></span>
-            <a class="icon" [routerLink]="['/plans', e.p.id, 'play']" [queryParams]="{ training: t.id, index: e.i }"
-               aria-label="Plan einzeln starten" title="Plan einzeln starten">▶</a>
+            <a class="icon" [routerLink]="['/workouts', e.p.id, 'play']" [queryParams]="{ training: t.id, index: e.i }"
+               aria-label="Workout einzeln starten" title="Workout einzeln starten">▶</a>
           </div>
         }
         @if (doneCount()) { <div class="row" style="margin-top:.5rem"><button class="linkbtn" (click)="progress.reset(t.id)">Markierungen zurücksetzen</button></div> }
@@ -35,13 +35,13 @@ import { formatDuration, planSeconds } from '../core/models';
     } @else { <p class="center">Training nicht gefunden. <a routerLink="/trainings">Zurück</a></p> }`,
 })
 export class TrainingDetailComponent {
-  private ps = inject(PlanService); private ts = inject(TrainingService); progress = inject(ProgressService);
+  private ps = inject(WorkoutService); private ts = inject(TrainingService); progress = inject(ProgressService);
   private id = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '';
-  fmt = formatDuration; sec = planSeconds;
+  fmt = formatDuration; sec = workoutSeconds;
   tr = computed(() => this.ts.get(this.id));
-  /** Pläne mit ihrer Position (i) im Training; gelöschte Pläne werden übersprungen */
-  entries = computed(() => (this.tr()?.planIds ?? []).flatMap((pid, i) => { const p = this.ps.get(pid); return p ? [{ p, i }] : []; }));
-  total = computed(() => this.entries().reduce((s, e) => s + planSeconds(e.p), 0));
+  /** Workouts mit ihrer Position (i) im Training; gelöschte Workouts werden übersprungen */
+  entries = computed(() => (this.tr()?.workoutIds ?? []).flatMap((pid, i) => { const p = this.ps.get(pid); return p ? [{ p, i }] : []; }));
+  total = computed(() => this.entries().reduce((s, e) => s + workoutSeconds(e.p), 0));
   doneSet = computed(() => new Set(this.progress.done(this.id)));
   doneCount = computed(() => this.entries().filter(e => this.doneSet().has(e.i)).length);
 }

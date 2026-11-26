@@ -1,22 +1,22 @@
 import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ExerciseService } from '../core/exercise.service';
-import { PlanService } from '../core/plan.service';
+import { WorkoutService } from '../core/workout.service';
 import { TrainingService } from '../core/training.service';
 import { LastUsedService } from '../core/last-used.service';
 import { ProgressService } from '../core/progress.service';
 import { SettingsService } from '../core/settings.service';
-import { Exercise, PAUSE_COLOR, TrainingPlan, colorOf, expandPlan, formatDuration, isGroup } from '../core/models';
+import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration, isGroup } from '../core/models';
 
 @Component({
   selector: 'app-player', standalone: true, imports: [RouterLink],
   template: `
-    @if (plan(); as p) {
+    @if (workout(); as p) {
       <h2 class="center">{{ p.name }}</h2>
       @if (done()) {
         <div class="card center"><h2>🎉 Geschafft!</h2><p>{{ fmt(totalSec()) }} Training abgeschlossen.</p>
           @if (ctx) { <div class="row"><a class="btn primary" [routerLink]="['/trainings', ctx]">Zurück zum Training</a></div> }
-          @else { <div class="row"><button class="btn primary" (click)="restart()">Nochmal</button><a class="btn secondary" routerLink="/plans">Zur Auswahl</a></div> }</div>
+          @else { <div class="row"><button class="btn primary" (click)="restart()">Nochmal</button><a class="btn secondary" routerLink="/workouts">Zur Auswahl</a></div> }</div>
       } @else {
         @if (current(); as c) {
           <div class="player-grid">
@@ -79,7 +79,7 @@ import { Exercise, PAUSE_COLOR, TrainingPlan, colorOf, expandPlan, formatDuratio
           </div>
         }
       }
-    } @else { <p class="center">Plan nicht gefunden. <a routerLink="/plans">Zurück</a></p> }
+    } @else { <p class="center">Workout nicht gefunden. <a routerLink="/workouts">Zurück</a></p> }
     @if (popup(); as pu) {
       <div class="overlay" [class.pinned]="pu.pinned" (click)="popup.set(null)">
         <article class="card detail pop" (click)="$event.stopPropagation()">
@@ -104,29 +104,29 @@ import { Exercise, PAUSE_COLOR, TrainingPlan, colorOf, expandPlan, formatDuratio
     }`,
 })
 export class PlayerComponent implements OnDestroy {
-  private es = inject(ExerciseService); private ps = inject(PlanService);
+  private es = inject(ExerciseService); private ps = inject(WorkoutService);
   fmt = formatDuration;
   private route = inject(ActivatedRoute); private ts = inject(TrainingService); private last = inject(LastUsedService);
   private router = inject(Router); private progress = inject(ProgressService); private settings = inject(SettingsService);
   /** Training, aus dem gestartet wurde (Rücksprung + Erledigt-Markierung) */
   readonly ctx: string | undefined = this.route.snapshot.routeConfig?.path?.startsWith('trainings')
     ? this.route.snapshot.paramMap.get('id') ?? undefined : this.route.snapshot.queryParamMap.get('training') ?? undefined;
-  plan = signal<TrainingPlan | undefined>(this.resolve());
-  /** /plans/:id/play = ein Plan, /trainings/:id/play = alle Pläne des Trainings hintereinander */
-  private resolve(): TrainingPlan | undefined {
+  workout = signal<Workout | undefined>(this.resolve());
+  /** /workouts/:id/play = ein Workout, /trainings/:id/play = alle Workouts des Trainings hintereinander */
+  private resolve(): Workout | undefined {
     const snap = this.route.snapshot, id = snap.paramMap.get('id') ?? '';
     if (snap.routeConfig?.path?.startsWith('trainings')) {
       const t = this.ts.get(id);
       return t && { id: t.id, name: t.name, description: t.description,
-        items: t.planIds.flatMap((pid, i) => { const p = this.ps.get(pid); return p ? expandPlan(p).map(it => ({ ...it, planIndex: i })) : []; }) };
+        items: t.workoutIds.flatMap((pid, i) => { const p = this.ps.get(pid); return p ? expandWorkout(p).map(it => ({ ...it, workoutIndex: i })) : []; }) };
     }
     const p = this.ps.get(id);
     if (!p) return undefined;
-    const idx = Number(snap.queryParamMap.get('index')), items = expandPlan(p);   // Runden/Gruppen aufgelöst
+    const idx = Number(snap.queryParamMap.get('index')), items = expandWorkout(p);   // Runden/Gruppen aufgelöst
     const ctx = snap.queryParamMap.has('training') && snap.queryParamMap.has('index') && isFinite(idx);
-    return { ...p, rounds: 1, items: ctx ? items.map(it => ({ ...it, planIndex: idx })) : items };
+    return { ...p, rounds: 1, items: ctx ? items.map(it => ({ ...it, workoutIndex: idx })) : items };
   }
-  rows = computed(() => (this.plan()?.items ?? []).flatMap(e => {
+  rows = computed(() => (this.workout()?.items ?? []).flatMap(e => {
     if (isGroup(e)) return [];
     if (e.pause) return [{ ...e, pause: true, ex: this.es.pause(), color: PAUSE_COLOR }];
     const ex = this.es.byId(e.exerciseId ?? '');
@@ -194,13 +194,13 @@ export class PlayerComponent implements OnDestroy {
   }
   cancelCountdown() { clearInterval(this.cdTimer); this.cd.set(null); }
   private back() { if (this.ctx) this.router.navigate(['/trainings', this.ctx]); }
-  private markPlan(row?: { planIndex?: number }) { if (this.ctx && row?.planIndex !== undefined) this.progress.mark(this.ctx, row.planIndex); }
+  private markWorkout(row?: { workoutIndex?: number }) { if (this.ctx && row?.workoutIndex !== undefined) this.progress.mark(this.ctx, row.workoutIndex); }
   private recorded = false;
   private record() {
-    const p = this.plan();
+    const p = this.workout();
     if (this.recorded || !p) return;
     this.recorded = true;
-    this.last.set(this.route.snapshot.routeConfig?.path?.startsWith('trainings') ? 'training' : 'plan', p.id);
+    this.last.set(this.route.snapshot.routeConfig?.path?.startsWith('trainings') ? 'training' : 'workout', p.id);
   }
   private start() {
     this.record(); this.started = true;
@@ -223,12 +223,12 @@ export class PlayerComponent implements OnDestroy {
     clearInterval(this.t);
     const cur = this.current(), nxt = this.rows()[this.idx() + 1];
     if (!nxt) {
-      this.markPlan(cur);
+      this.markWorkout(cur);
       this.running.set(false); this.release(); this.ms.set(0); this.done.set(true);
       if (this.ctx) this.backTimer = setTimeout(() => this.back(), 2500);   // zurück in die Training-Ansicht
       return;
     }
-    if (nxt.planIndex !== cur?.planIndex) this.markPlan(cur);               // Plan abgeschlossen
+    if (nxt.workoutIndex !== cur?.workoutIndex) this.markWorkout(cur);               // Workout abgeschlossen
     this.idx.update(i => i + 1); this.ms.set(this.current()!.durationSeconds * 1000);
     if (keepRunning) this.start(); else this.pause();
   }

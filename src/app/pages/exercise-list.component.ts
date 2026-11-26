@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { PlanService } from '../core/plan.service';
+import { WorkoutService } from '../core/workout.service';
 import { isGroup } from '../core/models';
 import { ExerciseService } from '../core/exercise.service';
 import { EXERCISE_TYPES, formatDuration } from '../core/models';
@@ -52,15 +52,15 @@ import { downloadJson, importMessage, readJsonFile, today } from '../core/file-i
     </div>`,
 })
 export class ExerciseListComponent {
-  es = inject(ExerciseService); private ps = inject(PlanService); fmt = formatDuration; types = EXERCISE_TYPES;
+  es = inject(ExerciseService); private ps = inject(WorkoutService); fmt = formatDuration; types = EXERCISE_TYPES;
   q = signal(''); type = signal(''); msg = signal(''); err = signal(false);
   list = computed(() => this.es.search(this.q()).filter(e => !this.type() || e.type === this.type()));
 
   del(id: string, name: string) {
     const restore = this.es.inBase(id);
-    const used = this.ps.plans().filter(p => p.items.some(e => isGroup(e) ? e.items.some(i => i.exerciseId === id) : e.exerciseId === id)).length;
+    const used = this.ps.workouts().filter(p => p.items.some(e => isGroup(e) ? e.items.some(i => i.exerciseId === id) : e.exerciseId === id)).length;
     const text = restore ? `Eigene Änderungen an „${name}“ verwerfen und das Original wiederherstellen?`
-      : `„${name}“ wirklich löschen?` + (used ? `\nSie wird in ${used} Plan/Plänen verwendet und fehlt dort danach.` : '');
+      : `„${name}“ wirklich löschen?` + (used ? `\nSie wird in ${used} Workout(s) verwendet und fehlt dort danach.` : '');
     if (confirm(text)) this.es.remove(id);
   }
   export() { downloadJson(`fitness-trainer-uebungen-${today()}.json`, this.es.exportData()); }

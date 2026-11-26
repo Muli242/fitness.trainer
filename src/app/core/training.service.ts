@@ -8,7 +8,9 @@ const IMG = /^data:image\/(jpeg|png|webp|gif);base64,/;
 @Injectable({ providedIn: 'root' })
 export class TrainingService {
   readonly trainings = signal<Training[]>(this.read());
-  private read(): Training[] { try { return JSON.parse(localStorage.getItem(KEY) ?? '[]'); } catch { return []; } }
+  private read(): Training[] {
+    try { return (JSON.parse(localStorage.getItem(KEY) ?? '[]') as any[]).map(t => t.workoutIds ? t : { ...t, workoutIds: t.planIds ?? [] }); } catch { return []; }
+  }
   /** false = Speicher voll (Bilder sind groß) */
   private persist(list: Training[]): boolean {
     try { localStorage.setItem(KEY, JSON.stringify(list)); this.trainings.set(list); return true; } catch { return false; }
@@ -36,11 +38,11 @@ export class TrainingService {
     return res;
   }
   private normalize(t: any): Training | null {
-    if (!t || typeof t.name !== 'string' || !t.name.trim() || !Array.isArray(t.planIds)) return null;
-    const planIds = t.planIds.filter((x: unknown): x is string => typeof x === 'string');
-    if (!planIds.length) return null;
+    if (!t || typeof t.name !== 'string' || !t.name.trim() || !Array.isArray(t.workoutIds ?? t.planIds)) return null;   // planIds = alte Daten
+    const workoutIds = (t.workoutIds ?? t.planIds).filter((x: unknown): x is string => typeof x === 'string');
+    if (!workoutIds.length) return null;
     const image = typeof t.image === 'string' && IMG.test(t.image) && t.image.length < 2_000_000 ? t.image : undefined;
     return { id: typeof t.id === 'string' && t.id ? t.id : this.newId(), name: t.name.trim(),
-      description: typeof t.description === 'string' ? t.description : '', planIds, ...(image ? { image } : {}) };
+      description: typeof t.description === 'string' ? t.description : '', workoutIds, ...(image ? { image } : {}) };
   }
 }

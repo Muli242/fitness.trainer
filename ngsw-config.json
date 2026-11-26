@@ -1,1 +1,51 @@
-{"$schema":"./node_modules/@angular/service-worker/config/schema.json","index":"/index.html","assetGroups":[{"name":"app","installMode":"prefetch","resources":{"files":["/favicon.svg","/index.html","/manifest.webmanifest","/*.css","/*.js"]}},{"name":"assets","installMode":"prefetch","updateMode":"prefetch","resources":{"files":["/assets/**","/icons/**"]}}]}
+{
+ "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+ "index": "/index.html",
+ "assetGroups": [
+  {
+   "name": "app",
+   "installMode": "prefetch",
+   "resources": {
+    "files": [
+     "/favicon.svg",
+     "/index.html",
+     "/manifest.webmanifest",
+     "/*.css",
+     "/*.js"
+    ]
+   }
+  },
+  {
+   "name": "assets",
+   "installMode": "prefetch",
+   "updateMode": "prefetch",
+   "resources": {
+    "files": [
+     "/assets/**",
+     "/icons/**"
+    ]
+   }
+  },
+  {
+   "name": "fonts",
+   "installMode": "prefetch",
+   "updateMode": "prefetch",
+   "resources": {
+    "files": [
+     "/media/inter-latin-*.woff2"
+    ]
+   }
+  },
+  {
+   "name": "media-rest",
+   "installMode": "lazy",
+   "updateMode": "lazy",
+   "resources": {
+    "files": [
+     "/media/**",
+     "!/media/inter-latin-*.woff2"
+    ]
+   }
+  }
+ ]
+}

@@ -4,7 +4,7 @@ const KEY = 'ft_progress';
 const today = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD, lokale Zeit
 interface Entry { date: string; done: number[]; }
 
-/** Erledigt-Markierungen je Training (Positionen der Pläne); gelten nur für den heutigen Tag */
+/** Erledigt-Markierungen je Training (Positionen der Workouts); gelten nur für den heutigen Tag */
 @Injectable({ providedIn: 'root' })
 export class ProgressService {
   private store = signal<Record<string, Entry>>(this.read());

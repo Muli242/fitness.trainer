@@ -30,7 +30,7 @@ import { EXERCISE_TYPES, Exercise, ExerciseType, isExerciseType } from '../core/
         <label>Dauer in Sekunden<input class="field" type="number" min="5" step="5" [(ngModel)]="duration"></label>
       } @else {
         <label>Anzahl Wiederholungen<input class="field" type="number" min="1" step="1" [(ngModel)]="reps"></label>
-        <label>Zeit im Plan (Sekunden, für die Gesamtdauer)<input class="field" type="number" min="5" step="5" [(ngModel)]="duration"></label>
+        <label>Zeit im Workout (Sekunden, für die Gesamtdauer)<input class="field" type="number" min="5" step="5" [(ngModel)]="duration"></label>
       }
     </section>
 

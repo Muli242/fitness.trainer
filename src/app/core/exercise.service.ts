@@ -53,6 +53,7 @@ export class ExerciseService {
   /** Übung stammt aus den mitgelieferten Daten (assets/exercises.json) */
   inBase(id: string) { return this.base().some(e => e.id === id); }
   /** Übung wurde in der App angelegt oder überschrieben */
+  customList() { return this.custom(); }
   isCustom(id: string) { return this.custom().some(e => e.id === id); }
   /** Neue eindeutige ID aus dem Namen */
   newId(name: string): string {

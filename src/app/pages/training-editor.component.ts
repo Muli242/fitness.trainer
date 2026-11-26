@@ -2,9 +2,9 @@ import { AfterViewInit, Component, ElementRef, SecurityContext, ViewChild, compu
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PlanService } from '../core/plan.service';
+import { WorkoutService } from '../core/workout.service';
 import { TrainingService } from '../core/training.service';
-import { TrainingPlan, formatDuration, planSeconds } from '../core/models';
+import { Workout, formatDuration, workoutSeconds } from '../core/models';
 import { imageToDataUrl } from '../core/file-io';
 
 @Component({
@@ -36,55 +36,55 @@ import { imageToDataUrl } from '../core/file-io';
     </section>
 
     <section class="card">
-      <h3>Trainingspläne im Training</h3>
-      @for (id of planIds(); track $index) {
+      <h3>Workouts im Training</h3>
+      @for (id of workoutIds(); track $index) {
         <div class="item">
           <span class="nr">{{ $index + 1 }}</span>
-          <span class="grow">{{ plan(id)?.name ?? 'Unbekannter Plan' }}</span>
-          <span class="badge">{{ fmt(sec(plan(id))) }}</span>
+          <span class="grow">{{ workout(id)?.name ?? 'Unbekanntes Workout' }}</span>
+          <span class="badge">{{ fmt(sec(workout(id))) }}</span>
           <button class="icon" (click)="move($index, -1)" [disabled]="$first">↑</button>
           <button class="icon" (click)="move($index, 1)" [disabled]="$last">↓</button>
           <button class="icon" (click)="remove($index)">✕</button>
         </div>
-      } @empty { <p class="muted">Noch kein Plan – unten hinzufügen.</p> }
-      <div class="summary"><strong>Gesamtdauer:</strong> {{ fmt(total()) }} · {{ planIds().length }} Pläne</div>
+      } @empty { <p class="muted">Noch kein Workout – unten hinzufügen.</p> }
+      <div class="summary"><strong>Gesamtdauer:</strong> {{ fmt(total()) }} · {{ workoutIds().length }} Workouts</div>
     </section>
 
     <section class="card">
-      <h3>Pläne hinzufügen</h3>
-      @for (p of ps.plans(); track p.id) {
+      <h3>Workouts hinzufügen</h3>
+      @for (p of ps.workouts(); track p.id) {
         <div class="item"><span class="grow"><strong>{{ p.name }}</strong><br><small class="muted">{{ fmt(sec(p)) }}</small></span>
           <button class="btn secondary" (click)="add(p)">+ Hinzufügen</button></div>
-      } @empty { <p class="muted">Es gibt noch keine Trainingspläne. Lege zuerst einen Plan an.</p> }
+      } @empty { <p class="muted">Es gibt noch keine Workouts. Lege zuerst ein Workout an.</p> }
     </section>
 
     @if (msg()) { <div class="note danger" role="alert">{{ msg() }}</div> }
     <div class="row sticky">
-      <button class="btn primary" [disabled]="!name.trim() || !planIds().length" (click)="save()">💾 Speichern</button>
+      <button class="btn primary" [disabled]="!name.trim() || !workoutIds().length" (click)="save()">💾 Speichern</button>
       <button class="btn secondary" (click)="router.navigate(['/trainings'])">Abbrechen</button>
     </div>`,
 })
 export class TrainingEditorComponent implements AfterViewInit {
-  ps = inject(PlanService); router = inject(Router);
+  ps = inject(WorkoutService); router = inject(Router);
   private ts = inject(TrainingService); private route = inject(ActivatedRoute); private san = inject(DomSanitizer);
-  fmt = formatDuration; sec = planSeconds;
+  fmt = formatDuration; sec = workoutSeconds;
   @ViewChild('ed') ed!: ElementRef<HTMLElement>;
   id = signal<string | undefined>(undefined);
   name = ''; private html = '';
   image = signal<string | undefined>(undefined);
-  planIds = signal<string[]>([]);
+  workoutIds = signal<string[]>([]);
   msg = signal('');
-  total = computed(() => this.planIds().reduce((s, id) => s + planSeconds(this.ps.get(id)), 0));
+  total = computed(() => this.workoutIds().reduce((s, id) => s + workoutSeconds(this.ps.get(id)), 0));
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
     const t = id ? this.ts.get(id) : undefined;
-    if (t) { this.id.set(t.id); this.name = t.name; this.html = t.description; this.image.set(t.image); this.planIds.set([...t.planIds]); }
+    if (t) { this.id.set(t.id); this.name = t.name; this.html = t.description; this.image.set(t.image); this.workoutIds.set([...t.workoutIds]); }
   }
   ngAfterViewInit() { // gespeichertes HTML nur bereinigt in den Editor übernehmen
     this.ed.nativeElement.innerHTML = this.san.sanitize(SecurityContext.HTML, this.html) ?? '';
   }
-  plan(id: string): TrainingPlan | undefined { return this.ps.get(id); }
+  workout(id: string): Workout | undefined { return this.ps.get(id); }
 
   cmd(c: string) { document.execCommand(c); }
   heading() { document.execCommand('formatBlock', false, document.queryCommandValue('formatBlock').toLowerCase() === 'h3' ? 'p' : 'h3'); }
@@ -96,13 +96,13 @@ export class TrainingEditorComponent implements AfterViewInit {
     if (!f) return;
     try { this.image.set(await imageToDataUrl(f)); this.msg.set(''); } catch { this.msg.set('Das Bild konnte nicht gelesen werden.'); }
   }
-  add(p: TrainingPlan) { this.planIds.update(l => [...l, p.id]); }
-  remove(i: number) { this.planIds.update(l => l.filter((_, x) => x !== i)); }
-  move(i: number, d: number) { this.planIds.update(l => { const c = [...l]; [c[i], c[i + d]] = [c[i + d], c[i]]; return c; }); }
+  add(p: Workout) { this.workoutIds.update(l => [...l, p.id]); }
+  remove(i: number) { this.workoutIds.update(l => l.filter((_, x) => x !== i)); }
+  move(i: number, d: number) { this.workoutIds.update(l => { const c = [...l]; [c[i], c[i + d]] = [c[i + d], c[i]]; return c; }); }
 
   save() {
     const ok = this.ts.save({ id: this.id() ?? this.ts.newId(), name: this.name.trim(), description: this.ed.nativeElement.innerHTML,
-      planIds: this.planIds(), ...(this.image() ? { image: this.image() } : {}) });
+      workoutIds: this.workoutIds(), ...(this.image() ? { image: this.image() } : {}) });
     if (ok) this.router.navigate(['/trainings']);
     else this.msg.set('Speicher voll – bitte ein kleineres Bild wählen oder das Bild entfernen.');
   }

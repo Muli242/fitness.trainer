@@ -43,6 +43,6 @@ export class TrainingService {
     if (!workoutIds.length) return null;
     const image = typeof t.image === 'string' && IMG.test(t.image) && t.image.length < 2_000_000 ? t.image : undefined;
     return { id: typeof t.id === 'string' && t.id ? t.id : this.newId(), name: t.name.trim(),
-      description: typeof t.description === 'string' ? t.description : '', workoutIds, ...(image ? { image } : {}) };
+      description: typeof t.description === 'string' ? t.description : '', workoutIds, ...(image ? { image } : {}), ...(t.showStartAll === true ? { showStartAll: true } : {}) };
   }
 }

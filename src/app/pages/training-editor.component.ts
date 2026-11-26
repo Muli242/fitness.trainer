@@ -47,6 +47,7 @@ import { imageToDataUrl } from '../core/file-io';
           <button class="icon" (click)="remove($index)">✕</button>
         </div>
       } @empty { <p class="muted">Noch kein Workout – unten hinzufügen.</p> }
+      <label class="row"><input type="checkbox" [checked]="startAll()" (change)="startAll.set($any($event.target).checked)"> Button „Training starten“ (alle Workouts nacheinander) anzeigen</label>
       <div class="summary"><strong>Gesamtdauer:</strong> {{ fmt(total()) }} · {{ workoutIds().length }} Workouts</div>
     </section>
 
@@ -73,13 +74,14 @@ export class TrainingEditorComponent implements AfterViewInit {
   name = ''; private html = '';
   image = signal<string | undefined>(undefined);
   workoutIds = signal<string[]>([]);
+  startAll = signal(false);
   msg = signal('');
   total = computed(() => this.workoutIds().reduce((s, id) => s + workoutSeconds(this.ps.get(id)), 0));
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
     const t = id ? this.ts.get(id) : undefined;
-    if (t) { this.id.set(t.id); this.name = t.name; this.html = t.description; this.image.set(t.image); this.workoutIds.set([...t.workoutIds]); }
+    if (t) { this.id.set(t.id); this.name = t.name; this.html = t.description; this.image.set(t.image); this.workoutIds.set([...t.workoutIds]); this.startAll.set(!!t.showStartAll); }
   }
   ngAfterViewInit() { // gespeichertes HTML nur bereinigt in den Editor übernehmen
     this.ed.nativeElement.innerHTML = this.san.sanitize(SecurityContext.HTML, this.html) ?? '';
@@ -102,7 +104,7 @@ export class TrainingEditorComponent implements AfterViewInit {
 
   save() {
     const ok = this.ts.save({ id: this.id() ?? this.ts.newId(), name: this.name.trim(), description: this.ed.nativeElement.innerHTML,
-      workoutIds: this.workoutIds(), ...(this.image() ? { image: this.image() } : {}) });
+      workoutIds: this.workoutIds(), ...(this.image() ? { image: this.image() } : {}), ...(this.startAll() ? { showStartAll: true } : {}) });
     if (ok) this.router.navigate(['/trainings']);
     else this.msg.set('Speicher voll – bitte ein kleineres Bild wählen oder das Bild entfernen.');
   }

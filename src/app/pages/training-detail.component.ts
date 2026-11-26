@@ -43,7 +43,7 @@ import { formatDuration, workoutSeconds } from '../core/models';
           </div>
         }
         @if (doneCount()) { <div class="row" style="margin-top:.5rem"><button class="linkbtn" (click)="progress.reset(t.id)">Markierungen zurücksetzen</button></div> }
-        <div class="row"><a class="btn primary" [routerLink]="['/trainings', t.id, 'play']" (click)="progress.reset(t.id)">▶ Training starten</a></div>
+        @if (t.showStartAll) { <div class="row"><a class="btn primary" [routerLink]="['/trainings', t.id, 'play']" (click)="progress.reset(t.id)">▶ Training starten</a></div> }
       </article>
     } @else { <p class="center">Training nicht gefunden. <a routerLink="/trainings">Zurück</a></p> }`,
 })

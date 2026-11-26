@@ -40,7 +40,7 @@ export function formatDuration(sec: number): string {
   return s ? `${m}:${String(s).padStart(2, '0')} Min` : `${m} Min`;
 }
 
-export interface Training { id: string; name: string; description: string; image?: string; workoutIds: string[]; }
+export interface Training { id: string; name: string; description: string; image?: string; workoutIds: string[]; showStartAll?: boolean; }
 export const isGroup = (e: WorkoutEntry): e is WorkoutGroup => 'items' in e;
 export const clampRounds = (n: unknown) => Math.min(20, Math.max(1, Math.round(Number(n)) || 1));
 export const colorOf = (i: WorkoutItem) => i.pause ? PAUSE_COLOR : PALETTE[(i.colorIndex ?? 0) % PALETTE.length];

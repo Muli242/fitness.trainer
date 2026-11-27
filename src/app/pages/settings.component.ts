@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { SettingsService } from '../core/settings.service';
 import { ThemeService } from '../core/theme.service';
 import { StorageService } from '../core/storage.service';
+import { SOUNDS, SoundService } from '../core/sound.service';
 
 @Component({
   selector: 'app-settings', standalone: true,
@@ -15,6 +16,15 @@ import { StorageService } from '../core/storage.service';
       </select>
       <p class="muted">Countdown mit Piepton vor dem Start eines Workouts.</p>
 
+      <h3>Signalton</h3>
+      <div class="filters">
+        <select class="search-bar" aria-label="Signalton" (change)="snd.set($any($event.target).value)">
+          @for (s of sounds; track s.id) { <option [value]="s.id" [selected]="snd.sound() === s.id">{{ s.name }}</option> }
+        </select>
+        <button class="btn secondary" (click)="snd.play()">▶ Probehören</button>
+      </div>
+      <p class="muted">Ertönt beim Start und am Ende jeder Einheit. Die Töne werden in der App erzeugt – keine Fremddateien, keine Lizenzfragen.</p>
+
       <h3>Design</h3>
       <div class="row">
         <button class="btn" [class.primary]="theme.theme() === 'dark'" [class.secondary]="theme.theme() !== 'dark'" (click)="theme.theme.set('dark')">☾ Dunkel</button>
@@ -27,6 +37,6 @@ import { StorageService } from '../core/storage.service';
     </section>`,
 })
 export class SettingsComponent {
-  settings = inject(SettingsService); theme = inject(ThemeService); storage = inject(StorageService);
+  settings = inject(SettingsService); theme = inject(ThemeService); storage = inject(StorageService); snd = inject(SoundService); sounds = SOUNDS;
   secs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 }

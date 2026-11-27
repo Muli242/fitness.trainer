@@ -22,6 +22,8 @@ export interface WorkoutItem {
   workoutIndex?: number;   // Position des Workouts im Training
   colorIndex?: number;  // Farbe der Übung (gleich in allen Runden)
   info?: string;        // z. B. "Runde 2/3 · Zirkel A 1/2"
+  group?: string;       // Name der Gruppe (Ausführen-Ansicht)
+  round?: string;       // z. B. "2/3" (Gruppen- bzw. Workout-Runde)
 }
 /** Gruppe von Übungen mit eigener Rundenzahl (Standard 1 = reine Zusammenfassung) */
 export interface WorkoutGroup { id?: string; name: string; rounds: number; items: WorkoutItem[]; }
@@ -57,11 +59,12 @@ export function expandEntries(entries: WorkoutEntry[], rounds = 1): WorkoutItem[
   for (let r = 0; r < R; r++) {
     const round = R > 1 ? `Runde ${r + 1}/${R}` : '';
     for (const e of colored) {
-      if (!isGroup(e)) { out.push({ ...e, info: round || undefined }); continue; }
+      if (!isGroup(e)) { out.push({ ...e, info: round || undefined, round: R > 1 ? `${r + 1}/${R}` : undefined }); continue; }
       const G = clampRounds(e.rounds);
       for (let g = 0; g < G; g++) {
         const info = [round, e.name ? (G > 1 ? `${e.name} ${g + 1}/${G}` : e.name) : ''].filter(Boolean).join(' · ');
-        for (const it of e.items) out.push({ ...it, info: info || undefined });
+        const rd = [G > 1 ? `${g + 1}/${G}` : '', R > 1 ? `${r + 1}/${R}` : ''].filter(Boolean).join(' · ');
+        for (const it of e.items) out.push({ ...it, info: info || undefined, group: e.name || undefined, round: rd || undefined });
       }
     }
   }

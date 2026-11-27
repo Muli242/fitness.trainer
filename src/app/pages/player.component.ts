@@ -5,6 +5,7 @@ import { WorkoutService } from '../core/workout.service';
 import { TrainingService } from '../core/training.service';
 import { LastUsedService } from '../core/last-used.service';
 import { ProgressService } from '../core/progress.service';
+import { SoundService } from '../core/sound.service';
 import { SettingsService } from '../core/settings.service';
 import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration, isGroup } from '../core/models';
 
@@ -19,13 +20,16 @@ import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration,
           @else { <div class="row"><button class="btn primary" (click)="restart()">Nochmal</button><a class="btn secondary" routerLink="/workouts">Zur Auswahl</a></div> }</div>
       } @else {
         @if (current(); as c) {
+          <div class="stats compact run-stats">
+            <div class="stat-box"><span class="stat-label">Verstrichen</span><span class="stat-value">{{ hms(elapsed()) }}</span></div>
+            <div class="stat-div"></div>
+            <div class="stat-box wide"><span class="stat-label">Runde</span><span class="stat-value">{{ roundText() }}</span></div>
+            <div class="stat-div"></div>
+            <div class="stat-box"><span class="stat-label">Verbleibend</span><span class="stat-value">{{ hms(remaining()) }}</span></div>
+          </div>
           <div class="player-grid">
             <div class="card timer panel" [class.hide-narrow]="view() !== 'timer'">
-              <div class="upnext">
-                <div class="next-label">@if (nx()) { NEXT }</div>
-                <div class="up">@if (nx(); as n) { <span class="sw" [style.background]="n.color"></span><strong>{{ n.ex.name }}</strong> }</div>
-                <div class="up">@if (nn(); as n) { <span class="sw" [style.background]="n.color"></span><strong>{{ n.ex.name }}</strong> }</div>
-              </div>
+              <div class="next-line">@if (nextEx(); as n) { <span class="next-label">NEXT</span><span class="sw" [style.background]="n.color"></span><strong>{{ n.ex.name }}</strong> }</div>
               <div class="dial">
                 <svg viewBox="0 0 300 300" aria-hidden="true">
                   @for (sg of segs(); track $index) {
@@ -39,7 +43,7 @@ import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration,
                     [attr.stroke-dasharray]="arcLen() + ' ' + C" transform="rotate(-90 150 150)"/>
                 </svg>
                 <div class="dial-center">
-                  <div class="dc-top muted small">{{ idx() + 1 }} / {{ rows().length }}@if (c.info) { · {{ c.info }} }</div>
+                  <div class="dc-top">{{ c.pause ? '💧' : '🏃' }}</div>
                   <div class="ex-name" [style.color]="c.color">{{ c.ex.name }}</div>
                   <div class="time">{{ mmss(left()) }}</div>
                 </div>
@@ -54,7 +58,6 @@ import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration,
                   <button class="info" (click)="pin(r.ex)" aria-label="Beschreibung anzeigen" title="Beschreibung anzeigen">ⓘ</button>
                 </div>
               }
-              @for (e of filler(); track $index) { <div class="item empty"></div> }
             </div>
           </div>
           <div class="controls">
@@ -135,10 +138,15 @@ export class PlayerComponent implements OnDestroy {
   idx = signal(0); ms = signal(0); running = signal(false); done = signal(false);
   left = computed(() => Math.ceil(this.ms() / 1000));
   current = computed(() => this.rows()[this.idx()]);
-  nx = computed(() => this.rows()[this.idx() + 1]);
-  nn = computed(() => this.rows()[this.idx() + 2]);
-  /** Leerzeilen, damit die Liste immer 12 Zeilen hoch ist */
-  filler = computed(() => Array.from({ length: Math.max(0, 12 - this.rows().length) }));
+  /** nächste Übung (Pausen werden übersprungen) */
+  nextEx = computed(() => this.rows().slice(this.idx() + 1).find(r => !r.pause));
+  elapsed = computed(() => {
+    const before = this.rows().slice(0, this.idx()).reduce((s, r) => s + r.durationSeconds, 0);
+    return before + Math.max(0, (this.current()?.durationSeconds ?? 0) - this.left());
+  });
+  remaining = computed(() => Math.max(0, this.totalSec() - this.elapsed()));
+  /** Übungsnummer/Anzahl ▪ Gruppe ▪ Runde */
+  roundText = computed(() => [`${this.idx() + 1}/${this.rows().length}`, this.current()?.group, this.current()?.round].filter(Boolean).join(' ▪ '));
   /** Anteil (0..1) der aktuellen Einheit, der bereits abgelaufen ist */
   frac = computed(() => { const d = (this.current()?.durationSeconds ?? 0) * 1000; return d ? 1 - this.ms() / d : 1; });
 
@@ -167,28 +175,25 @@ export class PlayerComponent implements OnDestroy {
     effect(() => { this.idx(); this.view(); setTimeout(() => document.querySelector('.item.current')?.scrollIntoView({ block: 'nearest' })); });
   }
 
+  hms(s: number) { return `${String(Math.floor(s / 3600)).padStart(2, '0')}:${this.mmss(s % 3600)}`; }
   mmss(s: number) { return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; }
 
   cd = signal<number | null>(null);   // laufender Start-Countdown
   private started = false; private cdTimer?: ReturnType<typeof setInterval>; private backTimer?: ReturnType<typeof setTimeout>;
-  private ac?: AudioContext;
-  /** gemeinsamer AudioContext, wird per Tipp-Geste freigeschaltet (nötig u. a. auf iOS) */
-  private audio(): AudioContext | undefined {
-    try { this.ac ??= new AudioContext(); if (this.ac.state === 'suspended') void this.ac.resume(); return this.ac; } catch { return undefined; }
-  }
+  private snd = inject(SoundService);
   toggle() {
-    this.audio();
+    this.snd.unlock();
     if (this.cd() !== null) { this.cancelCountdown(); return; }
     if (this.running()) { this.pause(); return; }
     const n = this.settings.countdown();
     if (n > 0 && !this.started) this.startCountdown(n); else this.start();
   }
   private startCountdown(n: number) {
-    this.cd.set(n); this.beep(660, 0.15);
+    this.cd.set(n); this.snd.tick();
     this.cdTimer = setInterval(() => {
       n--;
-      if (n <= 0) { this.cancelCountdown(); this.beep(1100, 0.5); this.start(); }
-      else { this.cd.set(n); this.beep(660, 0.15); }
+      if (n <= 0) { this.cancelCountdown(); this.snd.play(); this.start(); }
+      else { this.cd.set(n); this.snd.tick(); }
     }, 1000);
   }
   cancelCountdown() { clearInterval(this.cdTimer); this.cd.set(null); }
@@ -210,7 +215,7 @@ export class PlayerComponent implements OnDestroy {
   private tick() {
     const ms = Math.max(0, this.end - Date.now());
     this.ms.set(ms);
-    if (ms === 0) { this.beep(); this.next(true); }
+    if (ms === 0) { this.snd.play(); this.next(true); }
   }
   prev() {
     if (this.idx() === 0) return;
@@ -236,14 +241,5 @@ export class PlayerComponent implements OnDestroy {
 
   private async acquire() { try { this.lock = await navigator.wakeLock?.request('screen'); } catch { /* nicht unterstützt */ } }
   private release() { this.lock?.release().catch(() => {}); this.lock = undefined; }
-  private beep(freq = 880, dur = 0.8) {
-    const c = this.audio();
-    if (c) {
-      const o = c.createOscillator(), g = c.createGain();
-      o.frequency.value = freq; g.gain.setValueAtTime(0.3, c.currentTime); g.gain.exponentialRampToValueAtTime(0.00001, c.currentTime + dur);
-      o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + dur);
-    }
-    navigator.vibrate?.(dur > 0.3 ? 300 : 30);
-  }
-  ngOnDestroy() { clearInterval(this.t); clearInterval(this.cdTimer); clearTimeout(this.backTimer); void this.ac?.close(); this.release(); document.removeEventListener('visibilitychange', this.onVis); }
+  ngOnDestroy() { clearInterval(this.t); clearInterval(this.cdTimer); clearTimeout(this.backTimer); this.release(); document.removeEventListener('visibilitychange', this.onVis); }
 }

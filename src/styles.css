@@ -215,3 +215,16 @@ img{-webkit-user-drag:none;user-drag:none}
 .ex-purpose{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-top:.35rem;font-size:.9rem;font-weight:300}
 .ex-purpose .badge{flex:none;font-size:inherit;font-weight:inherit}
 .dot{width:12px;height:12px;border-radius:50%;flex:none}
+
+/* Ausführen: ganze Fläche nutzen, keine Kartenoptik */
+.card.panel{background:none;border:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+.card.panel.timer{height:auto;justify-content:flex-start;gap:.75rem}
+.card.panel.scroll{padding:0}
+.upnext{text-align:center}
+.next-label{min-height:1.2em;font-size:.85rem;font-weight:700;letter-spacing:3px;color:var(--accent-color)}
+.up{font-size:1.05rem;text-transform:none;letter-spacing:0;min-height:1.7em}
+.dial{width:min(100%,460px,54dvh)}
+.dial-center{display:grid;grid-template-rows:1fr auto 1fr;justify-items:center;padding:0 11%}
+.dc-top{align-self:end;padding-bottom:.6rem}
+.ex-name{font-size:clamp(1.3rem,6.2vw,1.9rem);line-height:1.15;margin:0;overflow-wrap:anywhere;hyphens:auto;max-width:100%}
+.time{align-self:start;padding-top:.5rem;font-size:2.4rem}

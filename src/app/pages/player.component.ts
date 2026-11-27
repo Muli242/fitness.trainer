@@ -22,8 +22,9 @@ import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration,
           <div class="player-grid">
             <div class="card timer panel" [class.hide-narrow]="view() !== 'timer'">
               <div class="upnext">
-                <div class="up">@if (nx(); as n) { <span class="sw" [style.background]="n.color"></span> Als Nächstes: <strong>{{ n.ex.name }}</strong> }</div>
-                <div class="up">@if (nn(); as n) { <span class="sw" [style.background]="n.color"></span> Danach: <strong>{{ n.ex.name }}</strong> }</div>
+                <div class="next-label">@if (nx()) { NEXT }</div>
+                <div class="up">@if (nx(); as n) { <span class="sw" [style.background]="n.color"></span><strong>{{ n.ex.name }}</strong> }</div>
+                <div class="up">@if (nn(); as n) { <span class="sw" [style.background]="n.color"></span><strong>{{ n.ex.name }}</strong> }</div>
               </div>
               <div class="dial">
                 <svg viewBox="0 0 300 300" aria-hidden="true">
@@ -38,11 +39,9 @@ import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration,
                     [attr.stroke-dasharray]="arcLen() + ' ' + C" transform="rotate(-90 150 150)"/>
                 </svg>
                 <div class="dial-center">
-                  <div class="ico">{{ c.pause ? '💧' : '🏃' }}</div>
+                  <div class="dc-top muted small">{{ idx() + 1 }} / {{ rows().length }}@if (c.info) { · {{ c.info }} }</div>
                   <div class="ex-name" [style.color]="c.color">{{ c.ex.name }}</div>
                   <div class="time">{{ mmss(left()) }}</div>
-                  <div class="muted small">{{ idx() + 1 }} / {{ rows().length }}</div>
-                  @if (c.info) { <div class="muted small">{{ c.info }}</div> }
                 </div>
               </div>
             </div>

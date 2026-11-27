@@ -32,7 +32,6 @@ interface Last { kind: 'training' | 'workout'; name: string; image?: string; sec
     <div class="tiles">
       <a class="tile" routerLink="/trainings">Trainings<small>{{ ts.trainings().length }} gespeichert</small></a>
       <a class="tile" routerLink="/workouts">Workouts<small>{{ ps.workouts().length }} gespeichert</small></a>
-      <a class="tile" routerLink="/workouts/new">Neues Workout<small>Aus Übungen erstellen</small></a>
       <a class="tile" routerLink="/exercises">Übungen<small>{{ es.exercises().length }} im Nachschlagewerk</small></a>
     </div>`,
 })

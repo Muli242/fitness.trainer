@@ -14,3 +14,9 @@ function hideSplash() {
 bootstrapApplication(AppComponent, appConfig)
   .then(() => setTimeout(hideSplash, Math.max(0, MIN_SPLASH_MS - performance.now())))
   .catch(err => { console.error(err); hideSplash(); });
+
+// Kein Kontextmenü (z. B. langer Druck auf Bilder) – außer in Eingabefeldern
+document.addEventListener('contextmenu', e => {
+  const t = e.target as HTMLElement | null;
+  if (!t?.closest?.('input,textarea,[contenteditable]')) e.preventDefault();
+});

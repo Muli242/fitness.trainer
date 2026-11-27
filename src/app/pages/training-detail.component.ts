@@ -1,12 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { WorkoutService } from '../core/workout.service';
 import { ProgressService } from '../core/progress.service';
 import { TrainingService } from '../core/training.service';
 import { formatDuration, workoutSeconds } from '../core/models';
+import { KebabComponent, KebabItem } from '../shared/kebab.component';
 
 @Component({
-  selector: 'app-training-detail', standalone: true, imports: [RouterLink],
+  selector: 'app-training-detail', standalone: true, imports: [RouterLink, KebabComponent],
   template: `
     @if (tr(); as t) {
       <article class="card">
@@ -24,7 +25,7 @@ import { formatDuration, workoutSeconds } from '../core/models';
             </div>
           </div>
         } @else if (t.image) { <img class="cover" [src]="t.image" alt=""> }
-        <h2>{{ t.name }}</h2>
+        <h2><span class="ttl">{{ t.name }}</span><app-kebab [items]="menu()" /></h2>
         <div class="stats compact">
           <div class="stat-box"><span class="stat-label">Dauer</span><span class="stat-value">{{ fmt(total()) }}</span></div>
           <div class="stat-div"></div>
@@ -59,6 +60,16 @@ export class TrainingDetailComponent {
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { this.swiped = true; this.flipped.update(v => !v); }
   }
   front() { if (this.swiped) { this.swiped = false; return; } this.flipped.set(true); }
+  private router = inject(Router);
+  menu(): KebabItem[] {
+    return [
+      { label: 'Bearbeiten', run: () => this.router.navigate(['/trainings', this.id, 'edit']) },
+      { label: 'Löschen', danger: true, run: () => {
+        const t = this.tr();
+        if (t && confirm(`„${t.name}“ wirklich löschen?`)) { this.ts.remove(t.id); this.router.navigate(['/trainings']); }
+      } },
+    ];
+  }
   fmt = formatDuration; sec = workoutSeconds;
   tr = computed(() => this.ts.get(this.id));
   /** Workouts mit ihrer Position (i) im Training; gelöschte Workouts werden übersprungen */

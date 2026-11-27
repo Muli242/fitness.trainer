@@ -17,12 +17,13 @@ import { SOUNDS, SoundService } from '../core/sound.service';
       <p class="muted">Countdown mit Piepton vor dem Start eines Workouts.</p>
 
       <h3>Signalton</h3>
-      <div class="filters">
+      <div class="sound-row">
         <select class="search-bar" aria-label="Signalton" (change)="snd.set($any($event.target).value)">
           @for (s of sounds; track s.id) { <option [value]="s.id" [selected]="snd.sound() === s.id">{{ s.name }}</option> }
         </select>
-        <button class="btn secondary" (click)="snd.play()">▶ Probehören</button>
+        <button class="btn secondary" (click)="snd.play()" aria-label="Probehören" title="Probehören">▶</button>
       </div>
+      <label class="row check-row"><input type="checkbox" [checked]="snd.vibration()" (change)="snd.setVibration($any($event.target).checked)"> Zusätzlich vibrieren</label>
       <p class="muted">Ertönt beim Start und am Ende jeder Einheit. Die Töne werden in der App erzeugt – keine Fremddateien, keine Lizenzfragen.</p>
 
       <h3>Design</h3>

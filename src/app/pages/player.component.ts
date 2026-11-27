@@ -29,7 +29,6 @@ import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration,
           </div>
           <div class="player-grid">
             <div class="card timer panel" [class.hide-narrow]="view() !== 'timer'">
-              <div class="next-line">@if (nextEx(); as n) { <span class="next-label">NEXT</span><span class="sw" [style.background]="n.color"></span><strong>{{ n.ex.name }}</strong> }</div>
               <div class="dial">
                 <svg viewBox="0 0 300 300" aria-hidden="true">
                   @for (sg of segs(); track $index) {
@@ -48,6 +47,7 @@ import { Exercise, PAUSE_COLOR, Workout, colorOf, expandWorkout, formatDuration,
                   <div class="time">{{ mmss(left()) }}</div>
                 </div>
               </div>
+              <div class="next-line">@if (nextEx(); as n) { <span class="next-label">NEXT</span><span class="sw" [style.background]="n.color"></span><strong>{{ n.ex.name }}</strong> }</div>
             </div>
             <div class="card panel scroll" [class.hide-narrow]="view() === 'timer'">
               @for (r of rows(); track $index) {

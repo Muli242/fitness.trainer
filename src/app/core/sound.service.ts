@@ -11,6 +11,10 @@ const KEY = 'ft_sound';
 @Injectable({ providedIn: 'root' })
 export class SoundService {
   readonly sound = signal<SoundId>(this.read());
+  /** Vibration zusätzlich zum Ton (nur Geräte mit Unterstützung) */
+  readonly vibration = signal<boolean>(localStorage.getItem('ft_vibrate') !== '0');
+  setVibration(on: boolean) { this.vibration.set(on); try { localStorage.setItem('ft_vibrate', on ? '1' : '0'); } catch { /* ignorieren */ } }
+  private vibrate(ms: number) { if (this.vibration()) navigator.vibrate?.(ms); }
   private ac?: AudioContext;
   private read(): SoundId {
     try { const v = localStorage.getItem(KEY) as SoundId; return SOUNDS.some(s => s.id === v) ? v : 'beep'; } catch { return 'beep'; }
@@ -23,7 +27,7 @@ export class SoundService {
   }
 
   /** kurzer Tick (Start-Countdown) */
-  tick() { const c = this.unlock(); if (c) this.tone(c, c.currentTime, 660, 0.15, 0.3); navigator.vibrate?.(30); }
+  tick() { const c = this.unlock(); if (c) this.tone(c, c.currentTime, 660, 0.15, 0.3); this.vibrate(30); }
 
   /** gewähltes Signal (Start und Ende einer Einheit); id = Probehören */
   play(id: SoundId = this.sound()) {
@@ -35,7 +39,7 @@ export class SoundService {
       case 'alarm': for (let i = 0; i < 6; i++) this.tone(c, t + i * 0.16, i % 2 ? 660 : 880, 0.14, 0.12, 'square'); break;
       case 'chime': [784, 988, 1175, 1568].forEach((f, i) => this.tone(c, t + i * 0.14, f, 0.9, 0.22)); break;
     }
-    navigator.vibrate?.(id === 'off' || id === 'beep' ? 200 : 300);
+    this.vibrate(id === 'off' || id === 'beep' ? 200 : 300);
   }
 
   private tone(c: AudioContext, t: number, f: number, dur: number, vol: number, type: OscillatorType = 'sine', attack = 0.005) {
